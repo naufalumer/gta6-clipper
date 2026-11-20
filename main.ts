@@ -46,7 +46,10 @@ function isYouTubeAddress(value: unknown): value is string {
   }
   if (host === 'www.youtube.com' || host === 'youtube.com') {
     if (parsed.pathname.startsWith('/shorts/')) {
-      return parsed.pathname.slice('/shorts/'.length).length > 0;
+      // A YouTube video id is exactly 11 characters from [A-Za-z0-9_-];
+      // the scorer refuses any other shape, so refuse it here too.
+      const id = parsed.pathname.slice('/shorts/'.length);
+      return /^[A-Za-z0-9_-]{11}$/.test(id);
     }
     if (parsed.pathname === '/watch') {
       const id = parsed.searchParams.get('v');
